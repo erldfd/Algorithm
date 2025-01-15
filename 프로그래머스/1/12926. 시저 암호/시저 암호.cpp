@@ -1,19 +1,28 @@
+
 #include <string>
 #include <vector>
 
 using namespace std;
 
-string solution(string s, int n) {
-    string answer = "";
+string solution(string s, int n) 
+{
+    for(int i = 0; i < s.size(); ++i)
+    {
+        if(s[i] ==' ')
+        {
+            continue;
+        }
+        
+        bool IsCapital = isupper(s[i]);
+        
+        s[i] += n;
+        
 
-    for(auto &a: s) {
-        if(islower(a)) {
-            if(!islower(a+=n%26))
-                a-=26;
-        } else if(isupper(a)) {
-            if(!isupper(a+=n%26))
-                a-=26;
+        if(IsCapital && isupper(s[i]) == false || IsCapital == false &&  islower(s[i]) == false)
+        {
+            s[i] -= 26;
         }
     }
+
     return s;
 }
