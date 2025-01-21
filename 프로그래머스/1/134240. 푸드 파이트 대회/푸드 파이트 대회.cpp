@@ -17,11 +17,7 @@ string solution(vector<int> food)
         
         int FoodCount = food[i];
         string ReservedFood = "";
-        
-        for(int j = 0; j < FoodCount; ++j)
-        {
-            ReservedFood += i + '0';
-        }
+        ReservedFood.append(FoodCount, i + '0');
 
         answer.insert(answer.size() / 2, ReservedFood);
     }
