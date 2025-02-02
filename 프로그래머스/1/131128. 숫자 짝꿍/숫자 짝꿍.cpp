@@ -1,34 +1,51 @@
-
+#include <string>
 #include <vector>
-#include <algorithm>
-#include <iostream>
+#include <queue>
 
 using namespace std;
 
-string solution(string X, string Y) {
-    string answer = "";
-    sort(X.rbegin(),X.rend());
-    sort(Y.rbegin(),Y.rend());
-    int xsize = X.size(), ysize = Y.size(), xidx = 0, yidx = 0;
-    while(1){
-        if(xidx == xsize || yidx == ysize)  break;
-        if(X[xidx] == Y[yidx]){
-            answer += X[xidx];
-            xidx++;
-            yidx++;
+string solution(string X, string Y) 
+{
+    vector<int> NumberCheckerX = vector<int>(10, 0);
+    priority_queue<char> PairList;
 
-        }
-        else if(X[xidx] < Y[yidx]){
-            yidx++;
-        }
-        else{
-            xidx++;
+    string answer = "";
+    
+    for(const char& c : X)
+    {
+        int& NumberCount = NumberCheckerX[c - '0'];
+        NumberCount++;
+        
+    }
+    
+    for(const char& c : Y)
+    {
+        int& NumberCount = NumberCheckerX[c - '0'];
+        
+        if(NumberCount > 0)
+        {
+            NumberCount--;
+            PairList.push(c);
         }
     }
-    if (answer.empty()) answer += "-1";
-    if(answer[0] == '0'){
-        answer.clear();
-        answer += '0';
+    
+    int IteratingCount = PairList.size();
+    
+    if (IteratingCount == 0)
+    {
+        return "-1";
     }
+    
+    if (PairList.top() == '0')
+    {
+        return "0";
+    }
+    
+    for(int i = 0; i < IteratingCount; ++i)
+    {
+        answer += PairList.top();
+        PairList.pop();
+    }
+    
     return answer;
 }
