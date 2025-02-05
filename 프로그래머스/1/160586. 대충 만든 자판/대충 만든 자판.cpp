@@ -1,25 +1,16 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <algorithm>
-#include <iostream>
 
 using namespace std;
 
-unordered_map<char, int> InputCountCache;
-
 int CheckInputCount(vector<string>& keymap, const char& t)
 {
-    if(InputCountCache.find(t) != InputCountCache.end())
-    {
-        return InputCountCache[t];
-    }
-
     int IteratingCount = keymap[0].size();
 
-    for(int j = 0 ; j < IteratingCount; ++j)
+    for(int i, j = 0 ; j < IteratingCount; ++j)
     {
-        for(int i = 0; i < keymap.size(); ++i)
+        for(i = 0; i < keymap.size(); ++i)
         {
             IteratingCount = max(IteratingCount, (int)keymap[i].size());
             
@@ -29,11 +20,6 @@ int CheckInputCount(vector<string>& keymap, const char& t)
             }
             
             char key = keymap[i][j];
-
-            if(InputCountCache.find(key) == InputCountCache.end())
-            {
-                InputCountCache[key] = j + 1;
-            }
 
             if(key == t)
             {
