@@ -1,38 +1,25 @@
 #include <string>
 #include <vector>
-
+#include <iostream>
 using namespace std;
 
-vector<int> solution(vector<int> progresses, vector<int> speeds) 
-{
+vector<int> solution(vector<int> progresses, vector<int> speeds) {
     vector<int> answer;
-    int ProgressIndex = 0;
-    
-    while(ProgressIndex < speeds.size())
-    {
-        if(speeds[ProgressIndex] <= 0)
-        {
-            break;
-        }
 
-        int DistributeCount = 0;
-        
-        for(int i = ProgressIndex; i < speeds.size(); ++i)
-        {
-            progresses[i] += speeds[i];
-            
-            if(progresses[i] >= 100 && ProgressIndex == i)
-            {
-                DistributeCount++;
-                ProgressIndex++;
-            }
-        }
-        
-        if(DistributeCount > 0)
-        {
-            answer.push_back(DistributeCount);
-        }
+    int day;
+    int max_day = 0;
+    for (int i = 0; i < progresses.size(); ++i)
+    {
+        day = (99 - progresses[i]) / speeds[i] + 1;
+
+        if (answer.empty() || max_day < day)
+            answer.push_back(1);
+        else
+            ++answer.back();
+
+        if (max_day < day)
+            max_day = day;
     }
-    
+
     return answer;
 }
