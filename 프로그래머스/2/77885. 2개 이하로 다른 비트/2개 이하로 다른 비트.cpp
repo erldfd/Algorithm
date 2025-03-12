@@ -9,12 +9,7 @@ vector<long long> solution(vector<long long> numbers)
     
     for(auto& number : numbers)
     {
-        long long BitNum = 1;
-        
-        while((number & BitNum) != 0)
-        {
-            BitNum <<= 1;
-        }
+        long long BitNum = (~number & -~number);
         
         answer.push_back(number + BitNum - (BitNum >> 1));
     }
