@@ -5,15 +5,14 @@ using namespace std;
 
 int solution(int a, int b, int n) 
 {
-    int answer = 0;
+    int TotalCount = 0;
     
     while(n >= a)
     {
-        int CokeCount = (n / a) * b;
-        n %= a;
-        n += CokeCount;
-        answer += CokeCount;
+        int NewCount = (n / a) * b;
+        n = (n % a) + NewCount;
+        TotalCount += NewCount;
     }
     
-    return answer;
+    return TotalCount;
 }
