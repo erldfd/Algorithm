@@ -6,7 +6,7 @@ using namespace std;
 
 int solution(int N, vector<vector<int> > road, int K) 
 {
-    vector<vector<int>> Graph(N, vector<int>(N, 2100000000));
+    vector<vector<int>> Graph(N, vector<int>(N, 2000000000));
     
     for(int i = 0 ; i < road.size(); ++i)
     {
