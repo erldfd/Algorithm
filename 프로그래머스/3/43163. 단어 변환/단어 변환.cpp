@@ -1,67 +1,65 @@
 #include <string>
 #include <vector>
+#include <deque>
 #include <algorithm>
-#include <unordered_set>
-#include <iostream>
 
 using namespace std;
 
-bool CanChange(string& From, string& To)
+bool CanChange(string Before, string After)
 {
-    int Count = 0;
-    for(int i = 0; i < From.size(); ++i)
-    {
-        if(From[i] == To[i])
-        {
-            Count++;
-        }
-    }
-
-    return (Count == From.size() - 1);
-}
-
-int FindShortestCount(const string& begin, const string& target, vector<string>& words)
-{
-    int ShortestCount = 999999;
+    int SameCount = 0;
     
-    vector<tuple<string, int,unordered_set<string>>> DFS;
-    unordered_set<string> Visited;
-    Visited.insert(begin);
-    DFS.push_back({begin, 0, Visited});
-    
-    while(DFS.empty() == false)
+    for(int i = 0; i < Before.size(); ++i)
     {
-        auto [Current, TransformCount, CurrentVisited] = DFS.back();
-        DFS.pop_back();
-        
-        if(Current == target)
+        if(Before[i] == After[i])
         {
-            ShortestCount = min(ShortestCount, TransformCount);
-            continue;
-        }
-        
-        for(int i = 0; i < words.size(); ++i)
-        {
-            if(CurrentVisited.find(words[i]) != CurrentVisited.end())
-            {
-                continue;
-            }
-            
-            bool bCanChange = CanChange(Current, words[i]);
-            
-            if(bCanChange)
-            {
-                auto NextVisited = CurrentVisited;
-                NextVisited.insert(words[i]);
-                DFS.push_back({words[i], TransformCount + 1, NextVisited});
-            }
+            SameCount++;
         }
     }
     
-    return (ShortestCount == 999999) ? 0 : ShortestCount;
+    if(SameCount != Before.size() - 1)
+    {
+        return false;
+    }
+    
+    return true;
 }
 
 int solution(string begin, string target, vector<string> words) 
 {
-    return FindShortestCount(begin, target, words);
+    deque<vector<string>> BFS;
+    BFS.push_back(vector<string>(1, begin));
+
+    while(BFS.empty() == false)
+    {
+        auto History = BFS.back();
+        string Current = History.back();
+        int ChangeCount = History.size() - 1;
+        
+        BFS.pop_front();
+        
+        for(int i = 0; i < words.size(); ++i)
+        {
+            if(find(History.begin(), History.end(), words[i]) != History.end())
+            {
+                continue;
+            }
+            
+            if(CanChange(Current, words[i]) == false)
+            {
+                continue;
+            }
+
+            if(words[i] == target)
+            {
+                return ChangeCount + 1;
+            }
+            
+            History.push_back(words[i]);
+            BFS.push_back(History);
+            History.pop_back();
+        }
+    }
+    
+    return 0;
 }
