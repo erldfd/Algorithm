@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <deque>
-#include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
@@ -27,25 +27,23 @@ bool CanChange(string Before, string After)
 
 int solution(string begin, string target, vector<string> words) 
 {
-    deque<vector<string>> BFS;
-    BFS.push_back(vector<string>(1, begin));
-
+    unordered_set<string> Visited;
+    deque<pair<string, int>> BFS;
+    BFS.push_back({begin, 0});
+    
     while(BFS.empty() == false)
     {
-        auto History = BFS.back();
-        string Current = History.back();
-        int ChangeCount = History.size() - 1;
-        
+        auto [CurrentWord, ChangeCount] = BFS.back();
         BFS.pop_front();
         
         for(int i = 0; i < words.size(); ++i)
         {
-            if(find(History.begin(), History.end(), words[i]) != History.end())
+            if(Visited.find(words[i]) != Visited.end())
             {
                 continue;
             }
             
-            if(CanChange(Current, words[i]) == false)
+            if(CanChange(CurrentWord, words[i]) == false)
             {
                 continue;
             }
@@ -55,9 +53,8 @@ int solution(string begin, string target, vector<string> words)
                 return ChangeCount + 1;
             }
             
-            History.push_back(words[i]);
-            BFS.push_back(History);
-            History.pop_back();
+            Visited.insert(words[i]);
+            BFS.push_back({words[i], ChangeCount + 1});
         }
     }
     
