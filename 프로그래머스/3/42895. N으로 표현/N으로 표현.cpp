@@ -1,39 +1,42 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-int minCnt = 9;
-
-void dp(int N, int number, int cnt, int now){
-    if(cnt > 8){
-        return;
+int MinValue = 9;
+void DFS(int N, int Goal, int UseCount, int CurrentNumber)
+{
+    if(CurrentNumber == Goal)
+    {
+        MinValue = min(MinValue, UseCount);
     }
-
-    if(now == number){
-        minCnt = min(minCnt, cnt);
-    }
-
-    int operand = 0;
-
-    for(int i=1; i<=9; i++){
-        //5, 55, 555 만들기
-        operand = operand*10 + N; 
-
-        dp(N, number, cnt + i, now + operand);
-        dp(N, number, cnt + i, now - operand);
-
-        if(now != 0){
-            dp(N, number, cnt + i, now * operand);
-            dp(N, number, cnt + i, now / operand);
+    
+    int Operand = 0;
+    
+    for(int i = 0; i < 9; ++i)
+    {
+        //Operand += N * 10 * i;
+        Operand = Operand * 10 + N;
+        int NewUseCount = UseCount + i + 1;
+        if(NewUseCount > 8)
+        {
+            return;
+        }
+        
+        DFS(N, Goal, NewUseCount, CurrentNumber + Operand);
+        DFS(N, Goal, NewUseCount, CurrentNumber - Operand);
+        
+        if(CurrentNumber != 0)
+        {
+            DFS(N, Goal, NewUseCount, CurrentNumber * Operand);
+            DFS(N, Goal, NewUseCount, CurrentNumber / Operand);
         }
     }
-
-
 }
-int solution(int N, int number) {
-    int answer = 0;
-    dp(N, number, 0, 0);
-    answer = ((minCnt > 8) ? -1 : minCnt);
-    return answer;
+
+int solution(int N, int number) 
+{
+    DFS(N, number, 0, 0);
+    return (MinValue > 8) ? -1 : MinValue;
 }
