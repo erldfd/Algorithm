@@ -1,41 +1,47 @@
-#include <iostream>
+#include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-int DFS(vector<int>& Nums, int Target)
+vector<bool> Combination;
+
+int GetTargetCount(int PlusCount, int Target, const vector<int>& numbers)
 {
-	// currentNum, Index
-	vector<pair<int, int>> DFSVector;
-	DFSVector.push_back({ Nums[0], 0 });
-	DFSVector.push_back({ -Nums[0], 0 });
-
-	int TargetCount = 0;
-	int MaxIndex = Nums.size() - 1;
-
-	while (DFSVector.empty() == false)
-	{
-		auto [CurrentNum, CurrentIndex] = DFSVector.back();
-		DFSVector.pop_back();
-
-		if (CurrentIndex == MaxIndex)
-		{
-			if (CurrentNum == Target)
-			{
-				TargetCount++;
-			}
-
-			continue;
-		}
-
-		DFSVector.push_back({ CurrentNum + Nums[CurrentIndex + 1], CurrentIndex + 1 });
-		DFSVector.push_back({ CurrentNum - Nums[CurrentIndex + 1], CurrentIndex + 1 });
-	}
-
-	return TargetCount;
+    for(int i = 0; i < PlusCount; ++i)
+    {
+        Combination[numbers.size() - 1 - i] = true;
+    }
+    
+    int Result = 0;
+    do
+    {
+        int CurrentNumber = 0;
+        for(int i = 0; i < numbers.size(); ++i)
+        {
+            CurrentNumber += (Combination[i]) ? numbers[i] : -numbers[i];
+        }
+        
+        if(CurrentNumber == Target)
+        {
+            Result++;
+        }
+        
+    }while(next_permutation(Combination.begin(), Combination.end()));
+    
+    return Result;
 }
 
-int solution(vector<int> numbers, int target)
+int solution(vector<int> numbers, int target) 
 {
-	return DFS(numbers, target);
+    Combination.resize(numbers.size(), false);
+    
+    int answer = 0;
+    
+    for(int i = 0; i <= numbers.size(); ++i)
+    {
+        answer += GetTargetCount(i, target, numbers);
+    }
+    
+    return answer;
 }
