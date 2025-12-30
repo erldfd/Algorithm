@@ -3,49 +3,48 @@
 
 using namespace std;
 
+vector<bool> HasReserve(31, false);
+vector<bool> HasLost(31, false);
+
 int solution(int n, vector<int> lost, vector<int> reserve) 
 {
-    vector<int> GymSuitCountList = vector<int>(n, 1);
+    for(int r : reserve)
+    {
+        HasReserve[r] = true;
+    }
+    
+    for(int l : lost)
+    {
+        if(HasReserve[l])
+        {
+            HasReserve[l] = false;
+        }
+        else
+        {
+            HasLost[l] = true;
+        }
+    }
+    
     int answer = 0;
     
-    for(const auto& l : lost)
+    for(int i = 1; i <= n; ++i)
     {
-        GymSuitCountList[l - 1]--;
-    }
-    
-    for(const auto& r : reserve)
-    {
-        GymSuitCountList[r - 1]++;
-    }
-    
-    for(int i = 0; i < GymSuitCountList.size(); ++i)
-    {
-        if(i == 0 && GymSuitCountList[0] == 0 && GymSuitCountList[1] == 2)
+        if(HasLost[i])
         {
-            GymSuitCountList[0]++;
-            GymSuitCountList[1]--;
-        }
-        else if(i == GymSuitCountList.size() - 1 && GymSuitCountList[i] == 0 &&
-               GymSuitCountList[i - 1] == 2)
-        {
-            GymSuitCountList[i]++;
-            GymSuitCountList[i - 1]--;
-        }
-        else if(GymSuitCountList[i] == 0)
-        {
-            if(GymSuitCountList[i - 1] == 2)
+            if(HasReserve[i - 1])
             {
-                GymSuitCountList[i - 1]--;
-                GymSuitCountList[i]++;
+                HasReserve[i - 1] = false;
+                HasLost[i] = false;
+                answer++;
             }
-            else if(GymSuitCountList[i + 1] == 2)
+            else if(i < n && HasReserve[i + 1])
             {
-                GymSuitCountList[i + 1]--;
-                GymSuitCountList[i]++;
+                HasReserve[i + 1] = false;
+                HasLost[i] = false;
+                answer++;
             }
         }
-        
-        if(GymSuitCountList[i] > 0)
+        else
         {
             answer++;
         }
