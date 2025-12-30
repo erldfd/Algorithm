@@ -1,44 +1,26 @@
 #include <string>
-#include <vector>
-#include <algorithm>
-#include <iostream>
-
 using namespace std;
 
-string solution(string number, int k) 
-{
-    // num, index
-    vector<pair<char, int>> Rank;
-    string answer = "";
-    
-    for(int i = 0; i < number.size(); ++i)
-    {
-        Rank.push_back(make_pair(number[i], i));
-        sort(Rank.begin(), Rank.end(), [](const pair<char, int>& a, const pair<char, int>& b)
-             {
-                 return a.first < b.first;
-             });
-        
-        if (Rank.size() > k)
-        {
-            Rank.pop_back();
+string solution(string number, int k) {
+    string result = ""; // 스택 역할
+    int toRemove = k;
+    for (int i = 0; i < (int)number.length(); ++i) {
+        char c = number[i];
+        // 스택의 마지막보다 현재 문자가 크고, 아직 지울 수 있으면 pop
+        while (!result.empty() && toRemove > 0 && result.back() < c) {
+            result.pop_back();
+            --toRemove;
         }
+        result.push_back(c);
     }
-    
-    
-    for(auto& R : Rank)
-    {
-        cout << R.first << ", " << R.second << " / ";
+    // 아직 지워야 할 게 있으면 뒤에서부터 제거
+    if (toRemove > 0) {
+        result.erase(result.end() - toRemove, result.end());
     }
-    cout << endl;
-    cout << number << endl;
-    
-    for(int i =0; i < Rank.size(); ++i)
-    {
-        remove(number.begin(), number.end(), Rank[i].first);
-        number.pop_back();
-        cout << number << endl;
+    // 필요한 길이만 남기기 (안전장치)
+    int keepLen = (int)number.length() - k;
+    if ((int)result.length() > keepLen) {
+        result = result.substr(0, keepLen);
     }
-    
-    return answer;
+    return result;
 }
