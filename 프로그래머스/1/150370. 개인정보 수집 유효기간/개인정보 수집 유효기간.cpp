@@ -1,74 +1,52 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <iostream>
 #include <unordered_map>
+#include <iostream>
 
 using namespace std;
 
-unordered_map<string, int> TermMap;
-
-bool IsExpired(const string& today, const string& privacy)
+int DayToNum(const string& Day)
 {
-    stringstream TodaySS(today);
+    stringstream ss(Day);
+    string Temp;
     
-    string TodayYear = "";
-    getline(TodaySS, TodayYear, '.');
+    getline(ss, Temp, '.');
+    int Year = stoi(Temp) * 28 * 12;
     
-    string TodayMonth = "";
-    getline(TodaySS, TodayMonth, '.');
-
-    string TodayDay = "";
-    getline(TodaySS, TodayDay, '.');
+    getline(ss, Temp, '.');
+    int Month = stoi(Temp) * 28;
     
-    int TodayNum = stoi(TodayYear) * 12 * 28;
-    TodayNum += stoi(TodayMonth) * 28;
-    TodayNum += stoi(TodayDay);
+    getline(ss, Temp, '.');
+    int DayNum = stoi(Temp);
     
-    stringstream PrivacySS(privacy);
-    
-    string PrivacyYear = "";
-    getline(PrivacySS, PrivacyYear, '.');
-    
-    string PrivacyMonth = "";
-    getline(PrivacySS, PrivacyMonth, '.');
-    
-    string PrivacyDay = "";
-    getline(PrivacySS, PrivacyDay, ' ');
-    
-    string TermType = "";
-    getline(PrivacySS, TermType, ' ');
-    
-    int ExpiredDayNum = stoi(PrivacyYear) * 12 * 28;
-    ExpiredDayNum += stoi(PrivacyMonth) * 28;
-    ExpiredDayNum += stoi(PrivacyDay);
-    ExpiredDayNum += TermMap[TermType] * 28;
-
-    return (TodayNum - ExpiredDayNum >= 0);
+    return Year + Month + DayNum;
 }
 
 vector<int> solution(string today, vector<string> terms, vector<string> privacies) 
 {
-    for(auto& term : terms)
+    unordered_map<char, int> Rules;
+    
+    for(const string& term : terms)
     {
-        stringstream ss(term);
-        string Temp = "";
-        getline(ss, Temp, ' ');
-        
-        string NumString = "";
-        getline(ss, NumString, ' ');
-        int Num = stoi(NumString);
-        
-        TermMap[Temp] = Num;
+        Rules[term[0]] = stoi(term.substr(1));
     }
     
-    vector<int> answer;
+    int TodayNum = DayToNum(today);
     
-    for(int i =0; i < privacies.size(); ++i)
+    vector<int> answer;
+    int Index = 0;
+    for(string& p : privacies)
     {
-        if(IsExpired(today, privacies[i]))
+        Index++;
+        int RuleNum = Rules[p.back()] * 28;
+        p.pop_back();
+        
+        int Day = DayToNum(p) + RuleNum - 1;
+        
+        if(TodayNum - Day > 0)
         {
-            answer.push_back(i + 1);
+            answer.push_back(Index);
         }
     }
     
