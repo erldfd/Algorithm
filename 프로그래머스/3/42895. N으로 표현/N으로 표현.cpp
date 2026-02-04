@@ -1,42 +1,72 @@
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
-int MinValue = 9;
-void DFS(int N, int Goal, int UseCount, int CurrentNumber)
+vector<unordered_set<int>> Caches(9);
+
+int UsingNumber;
+
+unordered_set<int>& CalcChances(int UsingNumberCount)
 {
-    if(CurrentNumber == Goal)
+    if(Caches[UsingNumberCount].empty() == false)
     {
-        MinValue = min(MinValue, UseCount);
+        return Caches[UsingNumberCount];
     }
     
     int Operand = 0;
-    
-    for(int i = 0; i < 9; ++i)
+    for(int i = 0; i < UsingNumberCount; ++i)
     {
-        //Operand += N * 10 * i;
-        Operand = Operand * 10 + N;
-        int NewUseCount = UseCount + i + 1;
-        if(NewUseCount > 8)
-        {
-            return;
-        }
+        Operand = Operand * 10 + UsingNumber;
+    }
+    
+    unordered_set<int> AllChances;
+    AllChances.insert(Operand);
+    
+    for(int i = 1; i < UsingNumberCount; ++i)
+    {
+        int j = UsingNumberCount - i;
         
-        DFS(N, Goal, NewUseCount, CurrentNumber + Operand);
-        DFS(N, Goal, NewUseCount, CurrentNumber - Operand);
+        const unordered_set<int>& Chances1 = CalcChances(i);
+        const unordered_set<int>& Chances2 = CalcChances(j);
         
-        if(CurrentNumber != 0)
+        for(int Chance1 : Chances1)
         {
-            DFS(N, Goal, NewUseCount, CurrentNumber * Operand);
-            DFS(N, Goal, NewUseCount, CurrentNumber / Operand);
+            for(int Chance2 : Chances2)
+            {
+                AllChances.insert(Chance1 + Chance2);
+                AllChances.insert(Chance1 - Chance2);
+                AllChances.insert(Chance1 * Chance2);
+                if(Chance2 != 0)
+                {
+                    AllChances.insert(Chance1 / Chance2);
+                }
+            }
         }
     }
+    
+    Caches[UsingNumberCount] = AllChances;
+    return Caches[UsingNumberCount];
 }
 
 int solution(int N, int number) 
 {
-    DFS(N, number, 0, 0);
-    return (MinValue > 8) ? -1 : MinValue;
+    UsingNumber = N;
+    
+    int answer = -1;
+    
+    for(int i = 1; i <= 8; ++i)
+    {
+        const unordered_set<int>& Chances = CalcChances(i);
+        if(Chances.find(number) == Chances.end())
+        {
+            continue;
+        }
+        
+        answer = i;
+        break;
+    }
+    
+    return answer;
 }
