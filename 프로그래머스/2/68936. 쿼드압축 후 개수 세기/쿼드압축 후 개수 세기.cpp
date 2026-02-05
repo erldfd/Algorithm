@@ -3,75 +3,47 @@
 
 using namespace std;
 
-vector<vector<int>> Array;
+int ZeroCount = 0;
+int OneCount = 0;
 
-int TotalZeroCount = 0;
-int TotalOneCount = 0;
-
-bool TryCompress(int StartX, int StartY, int SizeX, int SizeY, int& OutZeroCount, int& OutOneCount)
+bool IsAllSame(const vector<vector<int>>& arr, int StartX, int StartY, int Size, bool& bIsZero)
 {
-    int First = Array[StartX][StartY];
-    int TempZeroCount = 0;
-    int TempOneCount = 0;
-
-    for(int i = StartX; i < StartX + SizeX; ++i)
+    for(int x = StartX; x < StartX + Size; ++x)
     {
-        for(int j = StartY; j < StartY + SizeY; ++j)
+        for(int y = StartY; y < StartY + Size; ++y)
         {
-            int Current = Array[i][j];
-            
-            if(Current == 0)
+            if(arr[x][y] == arr[StartX][StartY])
             {
-                TempZeroCount++;
-            }
-            else // if(Current == 1)
-            {
-                TempOneCount++;
+                continue;
             }
             
-            if(First != Current)
-            {
-                return false;
-            }
+            return false;
         }
     }
     
-    if(TempZeroCount == 0)
-    {
-        OutZeroCount = 0;
-        OutOneCount = 1;
-    }
-    else //if(TempOneCount == 0)
-    {
-        OutZeroCount = 1;
-        OutOneCount = 0;
-    }
-    
+    bIsZero = (arr[StartX][StartY] == 0);
     return true;
 }
 
-void DFS(int StartX, int StartY, int SizeX, int SizeY)
-{ 
-    int ZeroCount = 0;
-    int OneCount = 0;
-    
-    if(TryCompress(StartX, StartY, SizeX, SizeY, ZeroCount, OneCount))
+
+void Divide(const vector<vector<int>>& arr, int StartX, int StartY, int Size)
+{
+    bool bIsZero = false;
+    if(IsAllSame(arr, StartX, StartY, Size, bIsZero))
     {
-        TotalZeroCount += ZeroCount;
-        TotalOneCount += OneCount;
+        (bIsZero) ? ZeroCount++ : OneCount++;
         return;
     }
     
-    DFS(StartX, StartY, SizeX / 2, SizeY / 2);
-    DFS(StartX, StartY + SizeY / 2, SizeX / 2, SizeY / 2);
-    DFS(StartX + SizeX / 2, StartY, SizeX / 2, SizeY / 2);
-    DFS(StartX + SizeX / 2, StartY + SizeY / 2, SizeX / 2, SizeY / 2);
+    int Half = Size / 2;
+    Divide(arr, StartX, StartY, Half);
+    Divide(arr, StartX + Half, StartY, Half);
+    Divide(arr, StartX, StartY + Half, Half);
+    Divide(arr, StartX + Half, StartY + Half, Half);
 }
 
 vector<int> solution(vector<vector<int>> arr) 
 {
-    Array = arr;
-    DFS(0, 0, arr.size(), arr[0].size());
-    
-    return {TotalZeroCount, TotalOneCount};
+    Divide(arr, 0, 0, arr.size());
+    return {ZeroCount, OneCount};
 }
