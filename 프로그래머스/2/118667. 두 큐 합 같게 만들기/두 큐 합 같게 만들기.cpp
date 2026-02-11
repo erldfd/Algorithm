@@ -1,55 +1,87 @@
 #include <string>
 #include <vector>
-#include <deque>
+#include <algorithm>
 
 using namespace std;
+/*
+[3, 2, 7, 2] = 14
+[4, 6, 5, 1] = 16
+*/
+
+int Front1, Front2;
+
+int Pop(const vector<int>& queue, bool bIs1)
+{
+    int& Front = (bIs1) ? Front1 : Front2;
+    
+    if(Front == -1)
+    {
+        return -1;
+    }
+    
+    int Element = queue[Front];
+    Front++;
+    
+    if(Front == queue.size() - 1)
+    {
+        Front = -1;
+    }
+    
+    return Element;
+}
+
+void Push(vector<int>& queue, int Element, bool bIs1)
+{
+    int& Front = (bIs1) ? Front1 : Front2;
+    
+    queue.push_back(Element);
+    if(Front == -1)
+    {
+        Front = queue.size() - 1;
+    }
+}
 
 int solution(vector<int> queue1, vector<int> queue2) 
 {
+    long long acc1 = 0;
+    long long acc2 = 0;
+    for(const int q : queue1)
+    {
+        acc1 += q;
+    }
+    
+    for(const int q : queue2)
+    {
+        acc2 += q;
+    }
+    
     int answer = 0;
-    
-    deque<int> deque1;
-    deque<int> deque2;
-    
-    long long Sum1 = 0;
-    long long Sum2 = 0;
-    
-    for(int i = 0; i < queue1.size(); ++i)
+    const int MaxTryCount = (queue1.size() + queue2.size()) * 2;
+    while(acc1 != acc2)
     {
-        deque1.push_back(queue1[i]);
-        Sum1 += queue1[i];
-    }
-    
-    for(int i = 0; i < queue2.size(); ++i)
-    {
-        deque2.push_back(queue2[i]);
-        Sum2 += queue2[i];
-    }
-    
-    long long AimValue = (Sum1 + Sum2) / 2;
-    
-    while(AimValue != Sum1)
-    {
-        if(Sum1 > AimValue)
+        int Element;
+        if(acc1 > acc2)
         {
-            Sum1 -= deque1.front();
-            Sum2 += deque1.front();
-            deque2.push_back(deque1.front());
-            deque1.pop_front();
+            Element = Pop(queue1, true);
+            Push(queue2, Element, false);
+            acc1 -= Element;
+            acc2 += Element;
         }
         else
         {
-            Sum1 += deque2.front();
-            Sum2 -= deque2.front();
-            deque1.push_back(deque2.front());
-            deque2.pop_front();
+            Element = Pop(queue2, false);
+            Push(queue1, Element, true);
+            
+            acc1 += Element;
+            acc2 -= Element;
         }
         
         answer++;
         
-        if(answer > (queue1.size() + queue2.size()) * 2)   
+        if(answer > MaxTryCount)
         {
-            return -1;
+            answer = -1;
+            break;
         }
     }
     
