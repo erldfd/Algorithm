@@ -1,34 +1,32 @@
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
+int Wins[]{6, 6, 5, 4, 3, 2, 1};
+
 vector<int> solution(vector<int> lottos, vector<int> win_nums) 
 {
-    int zeroCount =0;
-    int winCount = 0;
+    unordered_set<int> nums(win_nums.begin(), win_nums.end());
     
-    for(auto& num : lottos)
+    int MaxCount = 0;
+    int MinCount = 0;
+    for(int l : lottos)
     {
-        if(num == 0)
+        if(nums.find(l) == nums.end())
         {
-            zeroCount++;
-        }
-        
-        for(auto& winNum : win_nums)
-        {
-            if(num == winNum)
+            if(l == 0)
             {
-                winCount++;
+                MaxCount++;
             }
         }
+        else
+        {
+            MaxCount++;
+            MinCount++;
+        }
     }
-    
-    vector<int> answer;
-    
-    answer.push_back(clamp(7 - winCount - zeroCount, 1, 6));
-    answer.push_back(clamp(7 - winCount, 1, 6));
-    
-    return answer;
+
+    return {Wins[MaxCount], Wins[MinCount]};
 }
